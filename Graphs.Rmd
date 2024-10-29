@@ -1,0 +1,63 @@
+---
+title: "Vulnerability Assessment"
+author: "Katherine Frazer"
+date: "2024-10-29"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+source("setup.R")
+```
+
+Let's read in the dataset.
+
+```{r}
+crop_freq <- read_excel("CropsGrown.xlsx", 
+    range = "A1:M13")
+View(crop_freq)
+```
+
+As one can see, it isn't super workable at the moment. Let's use pivot_longer() to get it in a format we can use.
+
+```{r}
+crop_freq_tidy <- crop_freq %>%
+  pivot_longer(cols = 1:13, 
+               names_to = "County", 
+               values_to = "CropType") %>%
+  na.omit() #drop all rows with NA's
+```
+
+```{r}
+crop_freq_tidy %>%
+  group_by(CropType) %>% 
+  summarise(Count = n()) %>%
+  ggplot(aes(x = CropType, y = Count)) +
+  geom_col() +
+  scale_y_continuous(breaks = seq(0, 13, 1)) +
+  labs(title = "Frequency of Agricultural Products Produced",
+       subtitle = "CO Counties of Interest: Adams, Cheyenne, Elbert, Kit Carson, Larimer, Lincoln, Logan, \nMorgan, Phillips, Sedgwick, Washington, Weld, and Yuma",
+       x = "Agricultural Product",
+       y = "Number of Counties") +
+  theme_classic() +
+  theme(
+    plot.title = element_text(face = "bold", size = "16"),
+    plot.title.position = "plot",
+    plot.subtitle = element_text(size = "10"),
+    axis.title = element_text(face = "bold", size = "10"),
+    axis.text.x = element_text(size = "5", angle = 22.5),
+    axis.text.y = element_text(size = "5")
+  ) +
+  annotate(geom = "text", x = 6, y = 12.5, 
+           label = "Corn is produced by \nall 13 counties.",
+           size = 2.75) +
+  geom_curve(aes(x = 4.3, xend = 3, y = 12.5, yend = 10.5),
+             arrow = arrow(length = unit(0.2, "cm")),
+             size = 0.5,
+             curvature = 0.3)
+  
+# make sure to mention kelly, and the year
+```
