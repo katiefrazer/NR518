@@ -13,11 +13,14 @@ knitr::opts_chunk$set(echo = TRUE)
 source("setup.R")
 ```
 
+# Crop Frequency
+
 Let's read in the dataset.
 
 ```{r}
-crop_freq <- read_excel("CropsGrown.xlsx", 
+crop_freq <- read_excel("DataSets.xlsx", sheet = "Sheet1", 
     range = "A1:M13")
+
 View(crop_freq)
 ```
 
@@ -29,6 +32,8 @@ crop_freq_tidy <- crop_freq %>%
                names_to = "County", 
                values_to = "CropType") %>%
   na.omit() #drop all rows with NA's
+
+view(crop_freq_tidy)
 ```
 
 ```{r}
@@ -60,4 +65,38 @@ crop_freq_tidy %>%
              curvature = 0.3)
   
 # make sure to mention kelly, and the year
+```
+
+# Farming Jobs
+
+Let's read in the dataset.
+
+```{r}
+jobs <- read_excel("DataSets.xlsx", sheet = "Sheet2", 
+    range = "A1:B14")
+
+View(jobs)
+```
+
+It looks workable already, so let's graph.
+
+```{r}
+jobs %>%
+  ggplot(aes(x = County, y = AgWorkerPercentage)) +
+  geom_col() +
+  scale_y_continuous(breaks = seq(0, 40, 5)) +
+  labs(title = "Percentage of Jobs within the Agricultural Sector",
+       #subtitle = "CO Counties of Interest: Adams, Cheyenne, Elbert, Kit Carson, Larimer, Lincoln, Logan, \nMorgan, Phillips, Sedgwick, Washington, Weld, and Yuma",
+       subtitle = "Percentages provided by the Colorado Department of Local Affairs, 2022.",
+       x = "County of Interest",
+       y = "Percentage of Jobs") +
+  theme_classic() +
+  theme(
+    plot.title = element_text(face = "bold", size = "16"),
+    plot.title.position = "plot",
+    plot.subtitle = element_text(size = "10"),
+    axis.title = element_text(face = "bold", size = "10"),
+    axis.text.x = element_text(size = "5", angle = 22),
+    axis.text.y = element_text(size = "5")
+  ) 
 ```
